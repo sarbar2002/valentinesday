@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine Verification 💌</title>
+  <style>
+    :root{
+      --bg1:#ffedf3;
+      --bg2:#fff7fb;
+      --card:#ffffffcc;
+      --text:#1f1f1f;
+      --muted:#6b6b6b;
+      --pink:#ff4d88;
+      --pink2:#ff7aa8;
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+      --radius: 24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 600px at 20% 10%, #ffd1e1 0%, transparent 60%),
+        radial-gradient(900px 500px at 80% 20%, #ffdff0 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .wrap{
+      width:min(940px, 100%);
+      position:relative;
+    }
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid rgba(255,255,255,.7);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      overflow:hidden;
+    }
+    header{
+      padding:28px 28px 10px;
+      text-align:center;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size: clamp(24px, 3.5vw, 38px);
+      letter-spacing: -0.02em;
+    }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size: 15px;
+    }
+    main{
+      padding: 18px 22px 26px;
+      display:grid;
+      gap:18px;
+    }
+    .panel{
+      background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+    }
+    .qtitle{
+      font-weight:700;
+      font-size:18px;
+      margin:0 0 10px;
+    }
+    input[type="text"]{
+      width:min(520px, 100%);
+      border-radius: 14px;
+      border:1px solid rgba(0,0,0,.14);
+      padding: 12px 14px;
+      font-size:16px;
+      outline:none;
+    }
+    input[type="text"]:focus{
+      border-color: rgba(255,77,136,.6);
+      box-shadow: 0 0 0 5px rgba(255,77,136,.12);
+    }
+    .btn{
+      border:0;
+      cursor:pointer;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size:16px;
+      transition: transform .08s ease, filter .12s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn-primary{
+      background: linear-gradient(90deg, var(--pink), var(--pink2));
+      color:white;
+    }
+    .btn-ghost{
+      background: #fff;
+      border:1px solid rgba(0,0,0,.12);
+    }
+    .btn-danger{
+      background: #111;
+      color:#fff;
+    }
+    .hint{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:14px;
+      text-align:center;
+    }
+    .msg{
+      text-align:center;
+      font-weight:700;
+      margin-top:10px;
+    }
+    .msg.good{ color:#0b7a36; }
+    .msg.bad{ color:#b00020; }
+    footer{
+      padding:14px 18px;
+      text-align:center;
+      color:var(--muted);
+      background: rgba(255,255,255,.6);
+      border-top:1px solid rgba(0,0,0,.06);
+      font-size: 13px;
+    }
+
+    /* Modal popup */
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.35);
+      padding:18px;
+      z-index:9999;
+    }
+    .modal.show{ display:grid; }
+    .modalBox{
+      width:min(520px, 100%);
+      background:#fff;
+      border-radius: 20px;
+      padding:18px 16px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.25);
+      text-align:center;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+    .modalBox h2{ margin:0 0 6px; font-size:20px; }
+    .modalBox p{ margin:0 0 14px; color:var(--muted); }
+    .modalActions{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+
+    /* Confetti */
+    .confetti{
+      position: fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+      z-index: 9998;
+    }
+    .confetti.show{ display:block; }
+    .piece{
+      position:absolute;
+      width:10px; height:14px;
+      opacity:.9;
+      border-radius:3px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall{
+      0% { transform: translateY(-10vh) rotate(0deg); }
+      100%{ transform: translateY(110vh) rotate(720deg); }
+    }
+
+    /* Mystery boxes */
+    .boxes{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .box{
+      width: min(240px, 44vw);
+      height: 160px;
+      border-radius: 22px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: linear-gradient(180deg, #fff, #fff0f6);
+      box-shadow: 0 12px 30px rgba(0,0,0,.10);
+      cursor:pointer;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      font-size: 22px;
+      user-select:none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .box:hover{
+      box-shadow: 0 18px 44px rgba(0,0,0,.14);
+      transform: translateY(-2px);
+      animation: shake .55s ease-in-out infinite;
+    }
+    @keyframes shake{
+      0%,100%{ transform: translateY(-2px) rotate(0deg); }
+      25%{ transform: translateY(-2px) rotate(-2deg); }
+      50%{ transform: translateY(-2px) rotate(2deg); }
+      75%{ transform: translateY(-2px) rotate(-1deg); }
+    }
+    .box .sparkle{
+      position:absolute;
+      inset:0;
+      border-radius: 22px;
+      background: radial-gradient(200px 80px at 30% 20%, rgba(255,77,136,.18), transparent 60%),
+                  radial-gradient(160px 90px at 70% 70%, rgba(255,122,168,.16), transparent 60%);
+      pointer-events:none;
+    }
+
+    /* Reveal animation */
+    .reveal{
+      animation: pop .35s ease both;
+    }
+    @keyframes pop{
+      0%{ transform: scale(.94); opacity:0; }
+      100%{ transform: scale(1); opacity:1; }
+    }
+
+    .center{ text-align:center; }
+    .bigEmoji{ font-size: 84px; margin: 6px 0 10px; }
+    .gif{
+      width:min(360px, 92%);
+      border-radius: 18px;
+      border:1px solid rgba(0,0,0,.10);
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+      display:block;
+      margin: 10px auto 0;
+    }
+    .prizeImg{
+      width:min(520px, 96%);
+      border-radius: 18px;
+      border:1px solid rgba(0,0,0,.10);
+      box-shadow: 0 14px 34px rgba(0,0,0,.12);
+      display:block;
+      margin: 12px auto 8px;
+    }
+    a.track{
+      display:inline-block;
+      font-weight:900;
+      color: #fff;
+      text-decoration:none;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, var(--pink), var(--pink2));
+    }
+    a.track:hover{ filter: brightness(1.03); }
+  </style>
+</head>
+<body>
+  <div class="confetti" id="confetti"></div>
+
+  <div class="wrap">
+    <div class="card">
+      <header>
+        <h1 id="title">Verification Survey 🔒💘</h1>
+        <p class="subtitle" id="subtitle">Answer correctly to prove you’re the real one 😌</p>
+      </header>
+
+      <main id="main"></main>
+
+      <footer id="footer">Tip: be honest… I’m grading this 😤</footer>
+    </div>
+  </div>
+
+  <!-- modal -->
+  <div class="modal" id="modal">
+    <div class="modalBox">
+      <h2 id="modalTitle">Oops</h2>
+      <p id="modalText">Message</p>
+      <div class="modalActions">
+        <button class="btn btn-primary" id="modalBtn">Okay</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /********************
+   * CONFIG YOU EDIT  *
+   ********************/
+  // Put your UPS tracking link here.
+  // Easiest: https://www.ups.com/track?loc=en_US&tracknum=YOURTRACKINGNUMBER
+  const UPS_TRACKING_URL = "https://www.ups.com/track?loc=en_US&tracknum=1ZY07Y59YW53833322&requester=WT/trackdetails";
+
+  // Put your shelf image file in the repo named "shelf.jpg"
+  // (You can rename it and update this line.)
+  const SHELF_IMAGE_SRC = "shelf.jpg";
+
+  // Celebration GIF (online). You can swap this anytime.
+  const CELEBRATION_GIF_SRC = "https://cdn.pixabay.com/animation/2025/03/27/00/38/00-38-53-341_512.gif";
+
+  /********************
+   * QUIZ QUESTIONS   *
+   ********************/
+  const questions = [
+    {
+      prompt: "What date did we meet?",
+      placeholder: "Type the date…",
+      check: (raw) => isMeetDate(raw) // accepts many formats for Oct 11, 2025
+    },
+    {
+      prompt: "Do you love me?",
+      placeholder: "Yes or no… 👀",
+      check: (raw) => isYes(raw)
+    },
+    {
+      prompt: "What is my favorite thing to do with you?",
+      placeholder: "Hint: starts with C 😌",
+      check: (raw) => normalize(raw) === "cuddle" || normalize(raw) === "cuddling"
+    }
+  ];
+
+  /********************
+   * APP STATE        *
+   ********************/
+  const main = document.getElementById("main");
+  const footer = document.getElementById("footer");
+  const title = document.getElementById("title");
+  const subtitle = document.getElementById("subtitle");
+
+  let qIndex = 0;
+  let noEwTriesLeft = 2; // after first NO, 2 more tries -> total 3
+
+  /********************
+   * HELPERS          *
+   ********************/
+  function normalize(s){
+    return (s ?? "")
+      .toString()
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+  }
+
+  function isYes(raw){
+    const s = normalize(raw);
+    return ["yes","y","yeah","yep","yea","of course","obviously","duh","always"].includes(s);
+  }
+
+  // Accepts many forms of "October 11, 2025" including:
+  // "October 11th 2025", "Oct 11 2025", "10/11/2025", "2025-10-11", "10-11-2025"
+  function isMeetDate(raw){
+    const s0 = normalize(raw)
+      .replace(/[,]/g, " ")
+      .replace(/[.]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    // Quick accept if it mentions month name + 11 + 2025
+    const hasOct = /\boct\b|\boctober\b/.test(s0);
+    const has11 = /\b11\b|\b11th\b/.test(s0);
+    const has2025 = /\b2025\b/.test(s0);
+    if (hasOct && has11 && has2025) return true;
+
+    // Numeric formats
+    // 10/11/2025 or 10-11-2025 or 10.11.2025
+    if (/^10[\/\-\.]11[\/\-\.]2025$/.test(s0.replace(/\s/g,""))) return true;
+
+    // 2025-10-11 or 2025/10/11
+    if (/^2025[\/\-\.]10[\/\-\.]11$/.test(s0.replace(/\s/g,""))) return true;
+
+    // If user typed something like "10/11" without year, we should NOT accept.
+    return false;
+  }
+
+  function showModal(t, msg){
+    const modal = document.getElementById("modal");
+    document.getElementById("modalTitle").textContent = t;
+    document.getElementById("modalText").textContent = msg;
+    modal.classList.add("show");
+  }
+  function hideModal(){
+    document.getElementById("modal").classList.remove("show");
+  }
+  document.getElementById("modalBtn").addEventListener("click", hideModal);
+
+  function setScreen(html){
+    main.innerHTML = html;
+  }
+
+  /********************
+   * CONFETTI         *
+   ********************/
+  function launchConfetti(){
+    const wrap = document.getElementById("confetti");
+    wrap.innerHTML = "";
+    wrap.classList.add("show");
+
+    const pieces = 120;
+    for(let i=0;i<pieces;i++){
+      const d = document.createElement("div");
+      d.className = "piece";
+      d.style.left = Math.random()*100 + "vw";
+      d.style.top = (-10 - Math.random()*20) + "vh";
+      d.style.background = `hsl(${Math.floor(Math.random()*360)}, 90%, 65%)`;
+      d.style.animationDuration = (2.8 + Math.random()*2.4) + "s";
+      d.style.animationDelay = (Math.random()*0.25) + "s";
+      d.style.transform = `rotate(${Math.random()*360}deg)`;
+      d.style.width = (8 + Math.random()*8) + "px";
+      d.style.height = (10 + Math.random()*12) + "px";
+      wrap.appendChild(d);
+    }
+
+    // stop after a bit
+    setTimeout(()=> wrap.classList.remove("show"), 4200);
+  }
+
+  /********************
+   * SCREENS          *
+   ********************/
+  function renderQuiz(){
+    const q = questions[qIndex];
+    title.textContent = "Verification Survey 🔒💘";
+    subtitle.textContent = `Question ${qIndex+1} of ${questions.length}`;
+    footer.textContent = "Answer correctly to continue 😌";
+
+    setScreen(`
+      <section class="panel reveal">
+        <p class="qtitle">${escapeHtml(q.prompt)}</p>
+        <div class="row">
+          <input id="answer" type="text" placeholder="${escapeHtml(q.placeholder)}" autocomplete="off" />
+          <button class="btn btn-primary" id="submit">Submit</button>
+        </div>
+        <div class="hint">No pressure. But also… pressure 😤</div>
+        <div class="msg" id="msg"></div>
+      </section>
+    `);
+
+    const input = document.getElementById("answer");
+    const msg = document.getElementById("msg");
+
+    function attempt(){
+      const val = input.value;
+      const ok = q.check(val);
+
+      if(!ok){
+        msg.className = "msg bad";
+        msg.textContent = "Incorrect 😭 try again.";
+        // keep her on same question
+        input.focus();
+        input.select();
+        return;
+      }
+
+      msg.className = "msg good";
+      msg.textContent = "Correct 💘";
+      setTimeout(() => {
+        qIndex++;
+        if(qIndex < questions.length){
+          renderQuiz();
+        } else {
+          renderValentine();
+        }
+      }, 550);
+    }
+
+    document.getElementById("submit").addEventListener("click", attempt);
+    input.addEventListener("keydown", (e)=>{ if(e.key==="Enter") attempt(); });
+    setTimeout(()=> input.focus(), 50);
+  }
+
+  function renderValentine(){
+    title.textContent = "Final Question 💌";
+    subtitle.textContent = "";
+    footer.textContent = "Click the right answer for a prize 🎁";
+
+    setScreen(`
+      <section class="panel center reveal">
+        <div style="font-size:52px;margin-top:4px;">💖</div>
+        <h2 style="margin:10px 0 6px; font-size: clamp(22px, 3.2vw, 34px);">
+          Riya Nilesh Sheth Will you be my Valentine?
+        </h2>
+        <p style="margin:0 0 14px; color:var(--muted);">
+          (Choose wisely… your prize depends on it 😌)
+        </p>
+        <div class="row" style="margin-top:6px;">
+          <button class="btn btn-primary" id="yesBtn">Yes</button>
+          <button class="btn btn-danger" id="noBtn">No, Ew</button>
+        </div>
+      </section>
+    `);
+
+    document.getElementById("yesBtn").addEventListener("click", ()=>{
+      renderCelebrate();
+    });
+
+    document.getElementById("noBtn").addEventListener("click", ()=>{
+      if(noEwTriesLeft > 0){
+        const triesMsg = noEwTriesLeft === 2
+          ? "Incorrect 😡 That was suspicious. You have 2 more tries."
+          : "WRONG 😤 You have 1 more try… don’t break my heart.";
+        noEwTriesLeft--;
+        showModal("Nope 😭", triesMsg);
+      } else {
+        renderSad();
+      }
+    });
+  }
+
+  function renderSad(){
+    title.textContent = "";
+    subtitle.textContent = "";
+    footer.textContent = "Maybe Next Year";
+
+    setScreen(`
+      <section class="panel center reveal">
+        <div class="bigEmoji">😭</div>
+        <h2 style="margin:0 0 6px;">Pain.</h2>
+        <p style="margin:0; color:var(--muted);">You chose… poorly.</p>
+      </section>
+    `);
+  }
+
+  function renderCelebrate(){
+    launchConfetti();
+    title.textContent = "YAYYY 🎉";
+    subtitle.textContent = "Best decision ever 😌💘";
+    footer.textContent = "Pick a mystery box for your prize 👇";
+
+    setScreen(`
+      <section class="panel center reveal">
+        <h2 style="margin:0 0 6px; font-size: clamp(22px, 3.2vw, 34px);">CONGRATS!! 🎊</h2>
+        <p style="margin:0 0 10px; color:var(--muted);">Time to pick your prize…</p>
+        <img class="gif" alt="celebration gif" src="${CELEBRATION_GIF_SRC}" />
+        <div class="boxes" aria-label="mystery boxes">
+          <div class="box" id="box1" role="button" tabindex="0">
+            Mystery Box 1
+            <div class="sparkle"></div>
+          </div>
+          <div class="box" id="box2" role="button" tabindex="0">
+            Mystery Box 2
+            <div class="sparkle"></div>
+          </div>
+        </div>
+        <div class="hint">P.S. both are winners 😌</div>
+      </section>
+    `);
+
+    const openPrize = () => renderPrize();
+
+    ["box1","box2"].forEach(id=>{
+      const el = document.getElementById(id);
+      el.addEventListener("click", openPrize);
+      el.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" ") openPrize(); });
+    });
+  }
+
+  function renderPrize(){
+    title.textContent = "You won 🎁";
+    subtitle.textContent = "";
+    footer.textContent = "Track it below 📦";
+
+    // Simple guard if tracking URL not filled in yet
+    const trackingOk = UPS_TRACKING_URL && !UPS_TRACKING_URL.includes("PASTE_UPS_TRACKING_LINK_HERE");
+
+    setScreen(`
+      <section class="panel center reveal">
+        <h2 style="margin:0 0 8px; font-size: clamp(22px, 3.2vw, 34px);">
+          CONGRATS YOU WIN
+        </h2>
+        <img class="prizeImg" alt="Your prize: display shelf" src="${SHELF_IMAGE_SRC}" />
+        <div style="margin-top:10px;">
+          ${trackingOk
+            ? `<a class="track" href="${UPS_TRACKING_URL}" target="_blank" rel="noopener">Track it</a>`
+            : `<p style="color:var(--muted); margin:0;">
+                 (Add your UPS tracking link in the code to enable “Track it”.)
+               </p>`
+          }
+        </div>
+      </section>
+    `);
+  }
+
+  // Safe-ish escaping for injected text
+  function escapeHtml(str){
+    return (str ?? "").toString()
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  // Start
+  renderQuiz();
+</script>
+</body>
+</html>
