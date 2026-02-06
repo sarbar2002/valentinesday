@@ -324,7 +324,7 @@
     },
     {
       prompt: "What is my favorite thing to do with you?",
-      placeholder: "Hint: starts with C 😌",
+      placeholder: "Hint: starts with C...",
       check: (raw) => normalize(raw) === "cuddle" || normalize(raw) === "cuddling"
     }
   ];
@@ -431,7 +431,7 @@
     const q = questions[qIndex];
     title.textContent = "Verification Survey 🔒💘";
     subtitle.textContent = `Question ${qIndex+1} of ${questions.length}`;
-    footer.textContent = "Answer correctly to continue 😌";
+    footer.textContent = "You must answer everything right to proceed";
 
     setScreen(`
       <section class="panel reveal">
@@ -440,7 +440,7 @@
           <input id="answer" type="text" placeholder="${escapeHtml(q.placeholder)}" autocomplete="off" />
           <button class="btn btn-primary" id="submit">Submit</button>
         </div>
-        <div class="hint">No pressure. But also… pressure 😤</div>
+        <div class="hint">Shouldve done your studying</div>
         <div class="msg" id="msg"></div>
       </section>
     `);
@@ -454,7 +454,7 @@
 
       if(!ok){
         msg.className = "msg bad";
-        msg.textContent = "Incorrect 😭 try again.";
+        msg.textContent = "WRONG, Cmon babe";
         // keep her on same question
         input.focus();
         input.select();
@@ -490,7 +490,7 @@
           Riya Nilesh Sheth Will you be my Valentine?
         </h2>
         <p style="margin:0 0 14px; color:var(--muted);">
-          (Choose wisely… your prize depends on it 😌)
+          (Choose wisely… your prize depends on it...)
         </p>
         <div class="row" style="margin-top:6px;">
           <button class="btn btn-primary" id="yesBtn">Yes</button>
@@ -506,10 +506,10 @@
     document.getElementById("noBtn").addEventListener("click", ()=>{
       if(noEwTriesLeft > 0){
         const triesMsg = noEwTriesLeft === 2
-          ? "Incorrect 😡 That was suspicious. You have 2 more tries."
-          : "WRONG 😤 You have 1 more try… don’t break my heart.";
+          ? "Uhmmmmmm thats not what I thought you were going to do"
+          : "WRONG, 1 more try before you break my heart";
         noEwTriesLeft--;
-        showModal("Nope 😭", triesMsg);
+        showModal("Nope", triesMsg);
       } else {
         renderSad();
       }
@@ -551,7 +551,7 @@
             <div class="sparkle"></div>
           </div>
         </div>
-        <div class="hint">P.S. both are winners 😌</div>
+        <div class="hint">P.S. both are winners</div>
       </section>
     `);
 
